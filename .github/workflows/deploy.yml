@@ -40,20 +40,85 @@ jobs:
         run: |
           # Patch 1: +layout.ts - set baseUrl to api.transitous.org
           cp mirror-repo/patches/layout.ts motis/ui/src/routes/+layout.ts
-          # Patch 2: +page.svelte - fix staticBaseUrl
+          # Patch 2: fix staticBaseUrl in +page.svelte
           sed -i "s|getStyle(theme, level, window.location.origin + window.location.pathname,|getStyle(theme, level, 'https://api.transitous.org/',|g" \
           motis/ui/src/routes/+page.svelte
-          # Patch 3: Set default colorMode to 'mode' (show moving vehicles by default)
+          # Patch 3: Default colorMode = 'mode' (show moving vehicles on load)
           sed -i "s|let colorMode = \$state<ColorMode>('stops');|let colorMode = \$state<ColorMode>('mode');|g" \
           motis/ui/src/routes/+page.svelte
-          # Patch 4: Set default zoom to 12 and center on Brno
-          sed -i "s|let zoom = \$state(15);|let zoom = \$state(12);|g" \
-          motis/ui/src/routes/+page.svelte
-          sed -i "s|let center = \$state<[number, number]>(\[0, 0\]);|let center = \$state<[number, number]>([16.6068, 49.1951]);|g" \
-          motis/ui/src/routes/+page.svelte
-          echo '--- Patches applied ---'
-          grep -n 'colorMode' motis/ui/src/routes/+page.svelte | head -5
-          grep -n 'zoom' motis/ui/src/routes/+page.svelte | head -5
+          # Patch 4: Inject custom overlay (legend + Brno button + redirect) into app.html
+          cat >> motis/ui/src/app.html << 'HTMLEOF'
+          <style>
+            #mirror-overlay {
+              position: fixed;
+              bottom: 24px;
+              right: 16px;
+              z-index: 9999;
+              display: flex;
+              flex-direction: column;
+              gap: 8px;
+              font-family: sans-serif;
+            }
+            #mirror-overlay button {
+              background: #1a1a2e;
+              color: #fff;
+              border: 1px solid #444;
+              border-radius: 8px;
+              padding: 7px 13px;
+              cursor: pointer;
+              font-size: 13px;
+              display: flex;
+              align-items: center;
+              gap: 6px;
+              box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+              transition: background 0.15s;
+            }
+            #mirror-overlay button:hover { background: #2a2a4e; }
+            #legend-panel {
+              background: #1a1a2eee;
+              color: #fff;
+              border: 1px solid #444;
+              border-radius: 10px;
+              padding: 10px 14px;
+              font-size: 12px;
+              box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+              display: none;
+              min-width: 160px;
+            }
+            #legend-panel.show { display: block; }
+            #legend-panel h4 { margin: 0 0 8px; font-size: 13px; color: #aaa; }
+            .leg-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
+            .leg-dot { width: 13px; height: 13px; border-radius: 50%; flex-shrink: 0; }
+            #mirror-link { font-size: 11px; color: #888; text-align: center; }
+            #mirror-link a { color: #6af; text-decoration: none; }
+          </style>
+          <div id="mirror-overlay">
+            <div id="legend-panel">
+              <h4>Barvy vozidel</h4>
+              <div class="leg-row"><div class="leg-dot" style="background:#a8e063"></div>Autobus</div>
+              <div class="leg-row"><div class="leg-dot" style="background:#e05c5c"></div>Vlak</div>
+              <div class="leg-row"><div class="leg-dot" style="background:#5b8cff"></div>Trajekt</div>
+              <div class="leg-row"><div class="leg-dot" style="background:#b06cf8"></div>Metro / tram</div>
+              <div class="leg-row"><div class="leg-dot" style="background:#f8c56c"></div>Rychlovlak</div>
+              <div class="leg-row"><div class="leg-dot" style="background:#aaa"></div>Ostatni</div>
+            </div>
+            <button onclick="document.getElementById('legend-panel').classList.toggle('show')">🗂 Legenda barev</button>
+            <button onclick="window.location.href=window.location.pathname+'?lat=49.1951&lng=16.6068&zoom=12'">📍 Brno</button>
+            <div id="mirror-link"><a href="https://api.transitous.org" target="_blank">api.transitous.org</a></div>
+          </div>
+          <script>
+            // Auto-redirect to Brno on first visit (no location in URL)
+            (function(){
+              var p = window.location.search;
+              if (!p || p === '?') {
+                var brnoUrl = window.location.pathname +
+                  '?lat=49.1951&lng=16.6068&zoom=12';
+                window.history.replaceState(null, '', brnoUrl);
+              }
+            })();
+          </script>
+          HTMLEOF
+          echo '--- Patches done ---'
       - name: Install dependencies
         working-directory: motis/ui
         run: pnpm install
