@@ -29,7 +29,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version:2220
+          node-version: 22
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -39,15 +39,6 @@ jobs:
       - name: Install dependencies
         working-directory: ui
         run: pnpm install
-
-      - name: Patch API base URL
-        working-directory: ui
-        run: |
-          find src -type f \( -name '*.ts' -o -name '*.svelte' \) | xargs grep -l 'localhost\|127\.0\.0\.1\|apiBase\|base_url\|VITE_API' | head -20
-          # Patch svelte.config.js to set base path
-          if grep -q 'base' svelte.config.js 2>/dev/null; then
-            echo 'base already set'
-          fi
 
       - name: Set API endpoint via env
         working-directory: ui
