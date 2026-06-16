@@ -1,0 +1,44 @@
+<style>
+#mv-panel{position:fixed;bottom:20px;right:16px;z-index:9999;display:flex;flex-direction:column;align-items:flex-end;gap:6px;font-family:sans-serif}
+#mv-legend{background:#1a1a2eee;color:#fff;border:1px solid #555;border-radius:10px;padding:10px 14px;font-size:12px;display:none;min-width:155px}
+#mv-legend.open{display:block}
+#mv-legend h4{margin:0 0 7px;font-size:12px;color:#aaa;text-transform:uppercase;letter-spacing:.5px}
+.mv-row{display:flex;align-items:center;gap:8px;margin:3px 0}
+.mv-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+#mv-btns{display:flex;gap:6px}
+#mv-btns button,#mv-orig{background:#1a1a2eee;color:#fff;border:1px solid #555;border-radius:8px;padding:6px 11px;cursor:pointer;font-size:12px;box-shadow:0 2px 6px rgba(0,0,0,.5);white-space:nowrap}
+#mv-btns button:hover,#mv-orig:hover{background:#2a2a4e}
+#mv-orig{text-decoration:none;display:block;text-align:center;font-size:11px;color:#9cf}
+#mv-clock{background:#1a1a2eee;color:#9cf;border:1px solid #555;border-radius:8px;padding:5px 11px;font-size:13px;font-family:monospace;text-align:center;letter-spacing:1px}
+</style>
+<div id="mv-panel">
+  <div id="mv-legend">
+    <h4>Barvy vozidel</h4>
+    <div class="mv-row"><div class="mv-dot" style="background:#a8e063"></div>Autobus</div>
+    <div class="mv-row"><div class="mv-dot" style="background:#e05c5c"></div>Vlak (regionalni)</div>
+    <div class="mv-row"><div class="mv-dot" style="background:#f8c56c"></div>Rychlovlak / EC / IC</div>
+    <div class="mv-row"><div class="mv-dot" style="background:#b06cf8"></div>Metro / tramvaj</div>
+    <div class="mv-row"><div class="mv-dot" style="background:#5b8cff"></div>Trajekt / lod</div>
+    <div class="mv-row"><div class="mv-dot" style="background:#aaa"></div>Ostatni</div>
+  </div>
+  <div id="mv-clock">--:--:--</div>
+  <div id="mv-btns">
+    <button onclick="document.getElementById('mv-legend').classList.toggle('open')">Legenda</button>
+    <button onclick="(function(){var m=window.maplibregl||window.__map;if(m&&m.flyTo){m.flyTo({center:[16.6068,49.1951],zoom:12})}else{var u=new URL(window.location.href);u.searchParams.delete('lat');u.searchParams.delete('lng');u.searchParams.delete('zoom');window.location.href=u.pathname+'?lat=49.1951&lng=16.6068&zoom=12';}})()">📍 Brno</button>
+  </div>
+  <a id="mv-orig" href="https://api.transitous.org" target="_blank">api.transitous.org</a>
+</div>
+<script>
+(function(){
+  var c=document.getElementById('mv-clock');
+  function tick(){
+    var d=new Date();
+    var h=String(d.getHours()).padStart(2,'0');
+    var m=String(d.getMinutes()).padStart(2,'0');
+    var s=String(d.getSeconds()).padStart(2,'0');
+    if(c)c.textContent=h+':'+m+':'+s;
+  }
+  tick();
+  setInterval(tick,1000);
+})();
+</script>
