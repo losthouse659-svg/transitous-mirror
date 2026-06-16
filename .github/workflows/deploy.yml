@@ -44,51 +44,40 @@ jobs:
           sed -i "s|let colorMode = \$state<ColorMode>('stops');|let colorMode = \$state<ColorMode>('mode');|g" \
             motis/ui/src/routes/+page.svelte
           python3 - <<'PYEOF'
-          # Force light theme by overriding style.ts dark colors to match light
-          # Instead of patching theme detection, we make 'dark' colors = light colors
-          s = open('motis/ui/src/lib/map/style.ts').read()
-
-          # Replace the entire dark: { ... } block with a copy of light colors
-          # Strategy: find 'dark:' section and replace background with light bg
-          # Simpler: replace dark background with a light blue-white
-          s = s.replace("background: '#18181b'", "background: '#eef4f8'")
-          s = s.replace("background: '#09090b'", "background: '#eef4f8'")
-          # Try common dark backgrounds
-          for dark_bg in ["'#1a1a2e'", "'#0f0f23'", "'#18181b'", "'#09090b'", "'#111'", "'#0d0d0d'"]:
-              s = s.replace(f'background: {dark_bg}', "background: '#eef4f8'")
-
-          # Find dark section and replace its background with light one
-          import re
-          # Replace dark water
-          s = re.sub(r"(dark:[^}]*?water:\s*')[^']*(')", r"\g<1>#4db8e8\2", s, flags=re.DOTALL)
-          open('motis/ui/src/lib/map/style.ts', 'w').write(s)
-
-          # Better approach: grep the actual dark background value and patch it
-          import subprocess
-          result = subprocess.run(['grep', '-n', 'background', 'motis/ui/src/lib/map/style.ts'], capture_output=True, text=True)
-          print('Background lines:')
-          print(result.stdout)
-
-          # Now force theme = light in page.svelte using line-number insert
+          # Force theme = light in +page.svelte
           p = open('motis/ui/src/routes/+page.svelte').read()
-          # Find the theme line and replace it entirely
           lines = p.split('\n')
           new_lines = []
           for line in lines:
               if "let theme: 'light' | 'dark'" in line:
                   new_lines.append("  let theme: 'light' | 'dark' = 'light';")
-                  print(f'Replaced theme line: {line[:80]}')
+                  print(f'Replaced: {line.strip()[:60]}')
               else:
                   new_lines.append(line)
           open('motis/ui/src/routes/+page.svelte', 'w').write('\n'.join(new_lines))
-          print('Theme forced to light')
+
+          # Patch style.ts dark colors -> light
+          # From debug: dark background = '#292929'
+          s = open('motis/ui/src/lib/map/style.ts').read()
+          # Replace the dark section background with bright white-blue
+          s = s.replace("background: '#292929'", "background: '#eef4f8'")
+          # Also patch any other very dark backgrounds
+          s = s.replace("background: '#1c1c1c'", "background: '#eef4f8'")
+          s = s.replace("background: '#000'", "background: '#eef4f8'")
+          # Water in dark theme - make vibrant blue
+          s = s.replace("water: '#1a2633'", "water: '#4db8e8'")
+          s = s.replace("water: '#1e3040'", "water: '#4db8e8'")
+          # Parks in dark - make green
+          s = s.replace("landusePark: '#1a2b1a'", "landusePark: '#a5d6a7'")
+          open('motis/ui/src/lib/map/style.ts', 'w').write(s)
+          print('style.ts dark->light patch done')
 
           # Inject overlay
           overlay = open('mirror-repo/patches/overlay.html').read()
           app = open('motis/ui/src/app.html').read()
           app = app.replace('</body>', overlay + '</body>')
           open('motis/ui/src/app.html', 'w').write(app)
-          print('Overlay injected OK')
+          print('All patches OK')
           PYEOF
       - name: Install dependencies
         working-directory: motis/ui
