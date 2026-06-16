@@ -38,18 +38,18 @@ jobs:
           run_install: false
       - name: Apply patches
         run: |
-          # Patch 1: baseUrl -> api.transitous.org
           cp mirror-repo/patches/layout.ts motis/ui/src/routes/+layout.ts
-          # Patch 2: fix map style base URL
           sed -i "s|getStyle(theme, level, window.location.origin + window.location.pathname,|getStyle(theme, level, 'https://api.transitous.org/',|g" \
             motis/ui/src/routes/+page.svelte
-          # Patch 3: default colorMode = 'mode' (pohybujici se vozidla hned pri nacteni)
           sed -i "s|let colorMode = \$state<ColorMode>('stops');|let colorMode = \$state<ColorMode>('mode');|g" \
             motis/ui/src/routes/+page.svelte
-          # Patch 4: vloz overlay panel pred </body> v app.html
-          OVERLAY=$(cat mirror-repo/patches/overlay.html)
-          sed -i "s|</body>|${OVERLAY}</body>|" motis/ui/src/app.html
-          echo '--- Patches done ---'
+          python3 - <<'PYEOF'
+          overlay = open('mirror-repo/patches/overlay.html').read()
+          app = open('motis/ui/src/app.html').read()
+          app = app.replace('</body>', overlay + '</body>')
+          open('motis/ui/src/app.html', 'w').write(app)
+          print('Overlay injected OK')
+          PYEOF
       - name: Install dependencies
         working-directory: motis/ui
         run: pnpm install
