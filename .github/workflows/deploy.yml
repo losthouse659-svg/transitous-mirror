@@ -20,11 +20,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout this repo (for patches)
+        uses: actions/checkout@v4
+        with:
+          path: mirror-repo
+
       - name: Checkout MOTIS source
         uses: actions/checkout@v4
         with:
           repository: motis-project/motis
           sparse-checkout: ui
+          path: motis
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -37,20 +43,18 @@ jobs:
           version: 10
           run_install: false
 
+      - name: Apply patch - replace +layout.ts with our clean version
+        run: |
+          cp mirror-repo/patches/layout.ts motis/ui/src/routes/+layout.ts
+          echo '--- Applied patch, result:'
+          cat motis/ui/src/routes/+layout.ts
+
       - name: Install dependencies
-        working-directory: ui
+        working-directory: motis/ui
         run: pnpm install
 
-      - name: Patch baseUrl to always use api.transitous.org
-        working-directory: ui
-        run: |
-          # Patch +layout.ts to hardcode baseUrl = https://api.transitous.org
-          sed -i "s|let baseUrl = String(window.location.origin + window.location.pathname);|let baseUrl = 'https://api.transitous.org';|g" src/routes/+layout.ts
-          echo '--- Patched +layout.ts ---'
-          grep 'baseUrl' src/routes/+layout.ts
-
       - name: Build all (API client + UI)
-        working-directory: ui
+        working-directory: motis/ui
         run: pnpm -r build
         env:
           VITE_API_BASE: https://api.transitous.org
@@ -59,7 +63,7 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ui/build
+          path: motis/ui/build
 
   deploy:
     needs: build
