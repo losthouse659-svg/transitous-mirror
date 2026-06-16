@@ -40,6 +40,10 @@ jobs:
         working-directory: ui
         run: pnpm install --unsafe-perm
 
+      - name: Build API client
+        working-directory: ui
+        run: pnpm --filter @motis-project/motis-client build
+
       - name: Set API endpoint via env
         working-directory: ui
         run: |
@@ -53,7 +57,7 @@ jobs:
           find src -type f \( -name '*.ts' -o -name '*.svelte' -o -name '*.js' \) -exec sed -i 's|http://localhost:8080|https://api.transitous.org|g' {} \;
           find src -type f \( -name '*.ts' -o -name '*.svelte' -o -name '*.js' \) -exec sed -i 's|http://localhost|https://api.transitous.org|g' {} \;
 
-      - name: Build
+      - name: Build UI
         working-directory: ui
         run: pnpm build
         env:
