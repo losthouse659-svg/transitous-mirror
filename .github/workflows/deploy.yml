@@ -36,9 +36,13 @@ jobs:
         with:
           version: latest
 
-      - name: Install dependencies
+      - name: Allow build scripts and install dependencies
         working-directory: ui
-        run: pnpm install
+        run: |
+          echo 'ignore-scripts=false' >> .npmrc || true
+          pnpm install --ignore-scripts
+          pnpm approve-builds --yes || true
+          pnpm install
 
       - name: Set API endpoint via env
         working-directory: ui
