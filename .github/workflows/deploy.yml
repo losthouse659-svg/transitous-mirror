@@ -41,18 +41,20 @@ jobs:
         working-directory: ui
         run: pnpm install
 
+      - name: Patch baseUrl to always use api.transitous.org
+        working-directory: ui
+        run: |
+          # Patch +layout.ts to hardcode baseUrl = https://api.transitous.org
+          sed -i "s|let baseUrl = String(window.location.origin + window.location.pathname);|let baseUrl = 'https://api.transitous.org';|g" src/routes/+layout.ts
+          echo '--- Patched +layout.ts ---'
+          grep 'baseUrl' src/routes/+layout.ts
+
       - name: Build all (API client + UI)
         working-directory: ui
         run: pnpm -r build
         env:
           VITE_API_BASE: https://api.transitous.org
           VITE_MOTIS_API: https://api.transitous.org
-
-      - name: Patch hardcoded localhost URLs in built output
-        working-directory: ui
-        run: |
-          find build -type f \( -name '*.js' -o -name '*.html' \) -exec sed -i 's|http://localhost:8080|https://api.transitous.org|g' {} \;
-          find build -type f \( -name '*.js' -o -name '*.html' \) -exec sed -i 's|http://localhost|https://api.transitous.org|g' {} \; || true
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
