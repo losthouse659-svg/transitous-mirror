@@ -36,9 +36,17 @@ jobs:
         with:
           version: latest
 
+      - name: Configure pnpm to allow esbuild build scripts
+        working-directory: ui
+        run: |
+          cat .npmrc 2>/dev/null || true
+          echo '' >> .npmrc
+          echo 'onlyBuiltDependencies[]=esbuild' >> .npmrc
+          cat .npmrc
+
       - name: Install dependencies
         working-directory: ui
-        run: pnpm install --unsafe-perm
+        run: pnpm install
 
       - name: Build API client
         working-directory: ui
