@@ -44,6 +44,33 @@ jobs:
           sed -i "s|let colorMode = \$state<ColorMode>('stops');|let colorMode = \$state<ColorMode>('mode');|g" \
             motis/ui/src/routes/+page.svelte
           python3 - <<'PYEOF'
+          import re
+
+          # Patch page.svelte: force light theme
+          p = open('motis/ui/src/routes/+page.svelte').read()
+          # Override theme detection - always use light
+          p = re.sub(
+            r"let theme: 'light' \| 'dark' = .*?;\n",
+            "let theme: 'light' | 'dark' = 'light';\n",
+            p, flags=re.DOTALL
+          )
+          open('motis/ui/src/routes/+page.svelte', 'w').write(p)
+          print('Theme patch applied')
+
+          # Patch style.ts: custom vehicle-friendly light colors
+          # Change background from beige to a crisp white-blue modern look
+          s = open('motis/ui/src/lib/map/style.ts').read()
+          s = s.replace("background: '#f8f4f0'", "background: '#eef4f8'")
+          s = s.replace("water: '#99ddff'", "water: '#4db8e8'")
+          s = s.replace("motorway: '#ffb366'", "motorway: '#e8834a'")
+          s = s.replace("primarySecondary: '#fffbf8'", "primarySecondary: '#fff'")
+          s = s.replace("building: '#ded7d3'", "building: '#d0cfd4'")
+          s = s.replace("landuseNatureLight: '#ddecd7'", "landuseNatureLight: '#c8e6c9'")
+          s = s.replace("landusePark: '#b8ebad'", "landusePark: '#a5d6a7'")
+          open('motis/ui/src/lib/map/style.ts', 'w').write(s)
+          print('Style colors patch applied')
+
+          # Inject overlay
           overlay = open('mirror-repo/patches/overlay.html').read()
           app = open('motis/ui/src/app.html').read()
           app = app.replace('</body>', overlay + '</body>')
