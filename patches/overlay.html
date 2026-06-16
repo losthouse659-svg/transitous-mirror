@@ -1,7 +1,33 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
-/* === GLOBAL FONT & COLOR OVERRIDE === */
+/* === THEME VARIABLES === */
+:root {
+  --bg-main: rgba(8,22,18,0.96);
+  --bg-panel: #0d1f1a;
+  --bg-input: #0a1f18;
+  --border: #1e4d3c;
+  --border-strong: #1e5040;
+  --text-main: #c8ffe8;
+  --text-muted: #7ecfb0;
+  --text-dim: #3a7060;
+  --accent: #2affc4;
+  --shadow: rgba(0,255,150,0.07);
+}
+body.tm-light {
+  --bg-main: rgba(240,247,244,0.97);
+  --bg-panel: #eaf4f0;
+  --bg-input: #f5fbf8;
+  --border: #b0d8cc;
+  --border-strong: #8ec8b8;
+  --text-main: #0d3028;
+  --text-muted: #1a7060;
+  --text-dim: #5a9080;
+  --accent: #0a7f5a;
+  --shadow: rgba(0,100,80,0.08);
+}
+
+/* === GLOBAL FONT === */
 body, input, button, select, textarea {
   font-family: 'Inter', system-ui, sans-serif !important;
 }
@@ -12,152 +38,193 @@ div[class^="bg-"], div[class*=" bg-"] {
   border-radius: 12px !important;
 }
 
-/* Top tab bar (Spoje / Odjezdy / Izochrony) */
 nav, [role="tablist"],
 div:has(> button[role="tab"]) {
-  background: #0d1f1a !important;
-  border-bottom: 1px solid #1a4a3a !important;
+  background: var(--bg-panel) !important;
+  border-bottom: 1px solid var(--border) !important;
 }
 button[role="tab"] {
   font-family: 'Inter', sans-serif !important;
   font-size: 13px !important;
   font-weight: 600 !important;
-  color: #7ecfb0 !important;
+  color: var(--text-muted) !important;
   text-transform: uppercase !important;
   letter-spacing: .8px !important;
 }
 button[role="tab"][aria-selected="true"],
 button[role="tab"].active {
-  color: #2affc4 !important;
-  border-bottom: 2px solid #2affc4 !important;
+  color: var(--accent) !important;
+  border-bottom: 2px solid var(--accent) !important;
   background: transparent !important;
 }
 
-/* Main left sidebar card */
 div.absolute.left-2, div.absolute.left-4, div[class*="absolute"][class*="left"] {
-  background: rgba(8,22,18,0.96) !important;
-  border: 1px solid #1e4d3c !important;
+  background: var(--bg-main) !important;
+  border: 1px solid var(--border) !important;
   border-radius: 14px !important;
-  box-shadow: 0 4px 24px rgba(0,255,150,0.07) !important;
+  box-shadow: 0 4px 24px var(--shadow) !important;
 }
 
-/* Inputs */
 input[type="text"], input:not([type]), textarea {
-  background: #0a1f18 !important;
-  border: 1px solid #1e5040 !important;
-  color: #c8ffe8 !important;
+  background: var(--bg-input) !important;
+  border: 1px solid var(--border-strong) !important;
+  color: var(--text-main) !important;
   border-radius: 8px !important;
   font-family: 'Inter', sans-serif !important;
 }
-input::placeholder {
-  color: #3a7060 !important;
-}
+input::placeholder { color: var(--text-dim) !important; }
 
-/* Primary buttons (Odjezd/Prijezd) */
 button[class*="bg-"] {
   font-family: 'Inter', sans-serif !important;
   font-weight: 600 !important;
   border-radius: 8px !important;
 }
-
-/* Active blue button -> teal */
 button.bg-blue-600, button[class*="bg-blue"] {
-  background: #0e7f5a !important;
-  border-color: #0e7f5a !important;
-}
-button.bg-blue-600:hover, button[class*="bg-blue"]:hover {
-  background: #12a876 !important;
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
 }
 
-/* Top-right dropdown (Timetable) */
-button[class*="dropdown"], select,
-div[class*="absolute"][class*="right"] > button:first-child {
-  background: #0d1f1a !important;
-  border: 1px solid #1e4d3c !important;
-  color: #7ecfb0 !important;
+button[class*="dropdown"], select, div[class*="absolute"][class*="right"] > button:first-child {
+  background: var(--bg-panel) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-muted) !important;
   border-radius: 10px !important;
   font-family: 'Inter', sans-serif !important;
 }
 
-/* Map attribution strip */
 .maplibregl-ctrl-attrib {
-  background: rgba(5,15,12,0.85) !important;
-  color: #3a7060 !important;
+  background: var(--bg-main) !important;
+  color: var(--text-dim) !important;
   font-size: 10px !important;
   border-radius: 4px 0 0 0 !important;
 }
-.maplibregl-ctrl-attrib a { color: #2affc4 !important; }
-
-/* Scale bar */
+.maplibregl-ctrl-attrib a { color: var(--accent) !important; }
 .maplibregl-ctrl-scale {
-  background: rgba(5,15,12,0.8) !important;
-  border-color: #2affc4 !important;
-  color: #2affc4 !important;
+  background: var(--bg-main) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
   font-size: 10px !important;
 }
 
-/* Scrollbars */
 ::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: #0a1a14; }
-::-webkit-scrollbar-thumb { background: #1e5040; border-radius: 3px; }
+::-webkit-scrollbar-track { background: var(--bg-input); }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
 
-/* Title override in browser tab */
-</style>
+/* === VEHICLE ARROW MARKERS (Mapy.cz style) === */
+.tm-vehicle-marker {
+  width: 0; height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 18px solid currentColor;
+  position: relative;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.5));
+  transform-origin: center 75%;
+}
 
-<!-- Custom title -->
-<script>document.title = 'TrackMap – Live Transit';</script>
-
-<!-- Custom logo injected into top-left -->
-<div id="tm-logo" style="
-  position:fixed;top:0;left:0;right:0;height:0;z-index:10000;pointer-events:none;
-">
-  <div style="
-    position:absolute;top:6px;left:50%;transform:translateX(-50%);
-    background:linear-gradient(135deg,#0a2a1e,#0d3326);
-    border:1px solid #1e5a40;border-radius:20px;
-    padding:3px 14px;pointer-events:none;
-    font-family:'Inter',sans-serif;font-size:11px;font-weight:600;
-    color:#2affc4;letter-spacing:1.5px;text-transform:uppercase;
-    box-shadow:0 0 12px rgba(42,255,196,0.15);
-  ">TrackMap</div>
-</div>
-
-<!-- Bottom-right overlay panel -->
-<style>
+/* === PANEL === */
 #mv-panel{position:fixed;bottom:20px;right:16px;z-index:9999;display:flex;flex-direction:column;align-items:flex-end;gap:6px;font-family:'Inter',sans-serif}
-#mv-legend{background:rgba(8,22,18,0.97);color:#c8ffe8;border:1px solid #1e5040;border-radius:12px;padding:10px 14px;font-size:12px;display:none;min-width:165px;box-shadow:0 4px 20px rgba(0,255,150,0.1)}
+#mv-legend{background:var(--bg-main);color:var(--text-main);border:1px solid var(--border-strong);border-radius:12px;padding:10px 14px;font-size:12px;display:none;min-width:175px;box-shadow:0 4px 20px var(--shadow)}
 #mv-legend.open{display:block}
-#mv-legend h4{margin:0 0 8px;font-size:11px;color:#2affc4;text-transform:uppercase;letter-spacing:1px;font-weight:600}
-.mv-row{display:flex;align-items:center;gap:8px;margin:3px 0;color:#a0dfc0}
-.mv-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;box-shadow:0 0 4px currentColor}
+#mv-legend h4{margin:0 0 8px;font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.mv-row{display:flex;align-items:center;gap:8px;margin:3px 0;color:var(--text-muted)}
+/* Arrow icon in legend */
+.mv-arrow{width:14px;height:14px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center}
+.mv-arrow svg{width:14px;height:14px;filter:drop-shadow(0 0 3px currentColor)}
 #mv-btns{display:flex;gap:6px}
-#mv-btns button{background:rgba(8,22,18,0.95);color:#2affc4;border:1px solid #1e5040;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif;font-weight:600;box-shadow:0 2px 8px rgba(0,255,150,0.1);transition:all .15s;letter-spacing:.3px}
-#mv-btns button:hover{background:#0e3d2a;border-color:#2affc4;box-shadow:0 0 10px rgba(42,255,196,0.2)}
-#mv-orig{text-decoration:none;display:block;text-align:center;font-size:10px;color:#3a7060;font-family:'Inter',sans-serif;letter-spacing:.5px;transition:color .15s}
-#mv-orig:hover{color:#2affc4}
-#mv-clock{background:rgba(8,22,18,0.95);color:#2affc4;border:1px solid #1e5040;border-radius:8px;padding:5px 12px;font-size:13px;font-family:'Courier New',monospace;text-align:center;letter-spacing:2px;box-shadow:0 0 8px rgba(42,255,196,0.1)}
+#mv-btns button{background:var(--bg-main);color:var(--accent);border:1px solid var(--border-strong);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif;font-weight:600;box-shadow:0 2px 8px var(--shadow);transition:all .15s;letter-spacing:.3px}
+#mv-btns button:hover{background:var(--bg-panel);border-color:var(--accent)}
+#mv-orig{text-decoration:none;display:block;text-align:center;font-size:10px;color:var(--text-dim);font-family:'Inter',sans-serif;letter-spacing:.5px;transition:color .15s}
+#mv-orig:hover{color:var(--accent)}
+#mv-clock{background:var(--bg-main);color:var(--accent);border:1px solid var(--border-strong);border-radius:8px;padding:5px 12px;font-size:13px;font-family:'Courier New',monospace;text-align:center;letter-spacing:2px;box-shadow:0 0 8px var(--shadow)}
+#mv-theme{background:var(--bg-main);color:var(--accent);border:1px solid var(--border-strong);border-radius:8px;padding:5px 10px;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;transition:all .2s;box-shadow:0 2px 8px var(--shadow)}
+#mv-theme:hover{border-color:var(--accent);background:var(--bg-panel)}
 </style>
+
 <div id="mv-panel">
   <div id="mv-legend">
     <h4>Barvy vozidel</h4>
-    <div class="mv-row"><div class="mv-dot" style="background:#a8e063"></div>Autobus</div>
-    <div class="mv-row"><div class="mv-dot" style="background:#e05c5c"></div>Vlak (regionalni)</div>
-    <div class="mv-row"><div class="mv-dot" style="background:#f8c56c"></div>Rychlovlak / EC / IC</div>
-    <div class="mv-row"><div class="mv-dot" style="background:#b06cf8"></div>Metro / tramvaj</div>
-    <div class="mv-row"><div class="mv-dot" style="background:#5b8cff"></div>Trajekt / lod</div>
-    <div class="mv-row"><div class="mv-dot" style="background:#888"></div>Ostatni</div>
+    <div class="mv-row">
+      <span class="mv-arrow"><svg viewBox="0 0 14 18" fill="#3b82f6"><polygon points="7,0 14,18 7,13 0,18"/></svg></span>
+      Autobus
+    </div>
+    <div class="mv-row">
+      <span class="mv-arrow"><svg viewBox="0 0 14 18" fill="#22c55e"><polygon points="7,0 14,18 7,13 0,18"/></svg></span>
+      Vlak (regionální)
+    </div>
+    <div class="mv-row">
+      <span class="mv-arrow"><svg viewBox="0 0 14 18" fill="#f59e0b"><polygon points="7,0 14,18 7,13 0,18"/></svg></span>
+      Rychlovlak / EC / IC
+    </div>
+    <div class="mv-row">
+      <span class="mv-arrow"><svg viewBox="0 0 14 18" fill="#a855f7"><polygon points="7,0 14,18 7,13 0,18"/></svg></span>
+      Metro / tramvaj
+    </div>
+    <div class="mv-row">
+      <span class="mv-arrow"><svg viewBox="0 0 14 18" fill="#06b6d4"><polygon points="7,0 14,18 7,13 0,18"/></svg></span>
+      Trajekt / loď
+    </div>
+    <div class="mv-row">
+      <span class="mv-arrow"><svg viewBox="0 0 14 18" fill="#6b7280"><polygon points="7,0 14,18 7,13 0,18"/></svg></span>
+      Ostatní
+    </div>
+  </div>
+  <div id="mv-btns">
+    <button id="mv-theme" title="Prepínout dark/light">&#9790;</button>
+    <button onclick="document.getElementById('mv-legend').classList.toggle('open')">Legenda &#128205; Brno</button>
   </div>
   <div id="mv-clock">--:--:--</div>
-  <div id="mv-btns">
-    <button onclick="document.getElementById('mv-legend').classList.toggle('open')">Legenda</button>
-    <button onclick="(function(){var m=window.maplibregl||window.__map;if(m&&m.flyTo){m.flyTo({center:[16.6068,49.1951],zoom:12})}else{window.location.href=window.location.pathname+'?lat=49.1951&lng=16.6068&zoom=12';}})()">📍 Brno</button>
-  </div>
   <a id="mv-orig" href="https://api.transitous.org" target="_blank">zdroj dat: api.transitous.org</a>
 </div>
+
 <script>
 (function(){
+  // Clock
   var c=document.getElementById('mv-clock');
   function tick(){var d=new Date();if(c)c.textContent=[d.getHours(),d.getMinutes(),d.getSeconds()].map(function(n){return String(n).padStart(2,'0');}).join(':');}
   tick();setInterval(tick,1000);
+
+  // Dark/Light theme toggle
+  var themeBtn = document.getElementById('mv-theme');
+  var isDark = true;
+  themeBtn.addEventListener('click', function(){
+    isDark = !isDark;
+    if(isDark){
+      document.body.classList.remove('tm-light');
+      themeBtn.textContent = '\u263E';
+      themeBtn.title = 'P\u0159ep\u00ednout na sv\u011btl\u00fd motiv';
+    } else {
+      document.body.classList.add('tm-light');
+      themeBtn.textContent = '\u2600\uFE0F';
+      themeBtn.title = 'P\u0159ep\u00ednout na tmav\u00fd motiv';
+    }
+  });
+
+  // Vehicle arrow markers: replace dots/circles with Mapy.cz-style directional arrows
+  function patchMarkers(){
+    // Find all MapLibre vehicle markers (canvas markers or SVG circles used by Transitous)
+    // Transitous renders vehicles as colored circles on the map canvas.
+    // We patch the maplibregl Marker prototype to use arrow SVGs instead.
+    if(window.maplibregl && window.maplibregl.Marker){
+      var OrigMarker = window.maplibregl.Marker;
+      window.maplibregl.Marker = function(options){
+        options = options || {};
+        if(!options.element){
+          // Create arrow element
+          var color = (options.color) || '#3b82f6';
+          var el = document.createElement('div');
+          el.style.cssText = 'width:0;height:0;cursor:pointer;position:relative;transform-origin:center 75%;';
+          el.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" viewBox="0 0 14 18" style="filter:drop-shadow(0 1px 4px rgba(0,0,0,0.55))"><polygon points="7,0 14,18 7,13 0,18" fill="'+color+'"/></svg>';
+          options.element = el;
+        }
+        return new OrigMarker(options);
+      };
+      // Copy prototype
+      window.maplibregl.Marker.prototype = OrigMarker.prototype;
+    }
+  }
+  // Try immediately and after short delay (in case maplibregl loads later)
+  patchMarkers();
+  setTimeout(patchMarkers, 1500);
+  setTimeout(patchMarkers, 3000);
 })();
 </script>
